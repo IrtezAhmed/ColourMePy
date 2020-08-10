@@ -1,18 +1,14 @@
 # ColourMePy
 Image Colourization with Convolutional Autoencoder
 
-1.0 Introduction
+# 1.0 Introduction
 Our project is image colorization, the process of colourizing grayscale images. As seen in Figure 1, inputting a grayscale image into the AI model will return a colored version of the input image. The AI model will be trained to give the correct colors, in the LAB color space, to the correct objects. For example, the features of grass would be recognized by the model, and would return the color green. A practical use for this could be to turn old greyscale photos into colored ones. This can also have a more modern use as it can turn grayscale mangas, tv-shows and movies into colored versions of it, which could let the viewer have a new way of enjoying the art. Machine learning is a reasonable approach for accomplishing these feats as it could accurately, easily, and quickly take an input greyscale picture and modify it into a colored one with minimal supervision.
 
-Figure 1: An autoencoder used to convert images from grayscale to colourized
-
-2.0 Background and Related Works
+# 2.0 Background and Related Works
 Research on image colorization algorithms have demonstrated that models can be trained to produce reasonably colorized images from grayscale, and our model attempts to replicate the results of this research. A major study done by Richard Zhang et al. at the University of California, Berkeley details the use of GANs to train a fully-automated model that colorizes grayscale photographs [1, 2] The goal of Zhang’s model was to create plausible colourized images such that they could deceive a human into believing that they are original. The model emphasizes rare colors and strives for diversity in the colour palette to achieve a believable output. However, they found that biases in training datasets cause many algorithms to neglect the multimodal nature of colorization, in that certain images can have a range of colors (eg. an apple can either be red, green, or yellow). Our model does not attempt to diversify our dataset because we are training a low number of images compared to Zhang, who trains about three millions images on their model.
 3.0 Data Processing
 Our data was taken from Shravankumar Shetty’s Image Colorization dataset hosted on Kaggle [5]. The dataset contains four .npy files (numpy arrays) split as follows:
 
-Filename
-Contents
 gray_scale.npy
 25000 grayscale images
 ab1.npy
@@ -21,13 +17,10 @@ ab2.npy
 next 10000 coloured images
 ab3.npy
 final 5000 coloured images
-Table 1: Division of data in files
 
-The images contained in these files are 224x224px and exist in the LAB colour space. First, the grayscale images had to be combined with coloured images because the numpy arrays do not show a fully colourized image on their own. The following function shown in Figure 2 was created to combine these images.
+The images contained in these files are 224x224px and exist in the LAB colour space. First, the grayscale images had to be combined with coloured images because the numpy arrays do not show a fully colourized image on their own.
 
-
-Figure 2: Code for combining these images 
-This function not only combines the input images, but it also returns an array with a specified batch size to allow our team to choose the amount of training and validation data in their respective sets. Choosing smaller amounts was also crucial to minimize the RAM used, because Colab would crash for batch sizes in the thousands. 
+The function not only combines the input images, but it also returns an array with a specified batch size to allow our team to choose the amount of training and validation data in their respective sets. Choosing smaller amounts was also crucial to minimize the RAM used, because Colab would crash for batch sizes in the thousands. 
 Visualizing sample images in the LAB colour space proved difficult for our team. So we opted to create a function that converts sample images into the RGB colour space just for our previews. The function and an arbitrary preview is as follows in Figure 3 and 4.
 
 Figure 3: Code for previewing a random image
@@ -41,80 +34,8 @@ For our primary architecture, we chose to use a convolutional autoencoder. The e
 Unlike the baseline model in Section 5.0, this model takes three input channels. The 224x224 L colour channels in LAB were appended to two zero arrays of 224x224 representing A and B, thus representing all 3 channels in the input. The model upsamples the data from three channels to 64 channels, then back down to 3 channels. This process populates the zero arrays representing A and B, providing a fully colourized image. After trial and error, we found that the architecture shown in Figure 5 has provided the best results, with an accuracy of 81.9% (See Section 6). A padding of 1 was added to the encoding convolutional layers to yield the correct output size. 
 
 
-	Figure 5: Architecture of our Convolutional Autoencoder
-
-Table 2 below summarizes the hyperparameters of our convolutional autoencoder.
-
-Layer
-Input
-Output
-Kernel
-Stride
-Padding
-1
-3
-64
-3
-1
-1
-2
-64
-64
-2
-1
-1
-3
-64
-32
-2
-1
-0
-4
-32
-32
-1
-1
-0
-5
-32
-3
-1
-1
-0
-
-Table 2: Summary of Hyperparameters in Convolutional Autoencoder
-
-5.0 Baseline Model
+# 5.0 Baseline Model
 As can be seen in Figure 6, a simple ANN with three fully connected linear layers was chosen for our baseline model. The layers upsample the input by one each layer until it reaches 3 channels representing the LAB colour space, which can be seen in Table 3. This model has an accuracy of 61.7% (See Section 6). The images of the baseline produced can be seen below in Figure 7.
-
-Figure 6: Architecture of our Linear ANN
-
-Layer
-Input
-Output
-1
-1
-2
-2
-2
-3
-3
-3
-3
-
-Table 3: Summary of Hyperparameters in Baseline Model
-
-
-Grayscale
-Prediction
-Ground Truth
-
-
-
-
-
-
-Figure 7: Predictions of our Linear ANN on a bird and mountain
 
 It was immediately clear after testing this model that it was biased towards the colours blue and orange. Moreover, the images themselves appear to have a filter that makes them appear artificial with excess hue and saturation. 
 
