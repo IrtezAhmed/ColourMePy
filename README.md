@@ -41,7 +41,6 @@ Since our baseline model had an average loss of 2873, our accuracy came out to b
 Model | Accuracy | Training Time
 --- | --- | ---
 Baseline (Linear ANN) | 61.7% | ~30 minutes
---- | --- | ---
 Primary (Convolutional Autoencoder) | 81.9% | ~150 minutes
 
 
